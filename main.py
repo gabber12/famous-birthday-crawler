@@ -6,13 +6,12 @@ import bs4
 import scrapy
 from pymongo import MongoClient
 
-sem = asyncio.Semaphore(5)
+sem = asyncio.Semaphore(20)
 urls = []
 
 def get_seed_urls():
-    sem = asyncio.Semaphore(5)
     loop = asyncio.get_event_loop()
-    f = asyncio.wait([fetch_random_profiles() for i in range(1000)])
+    f = asyncio.wait([fetch_random_profiles() for i in range(200)])
     loop.run_until_complete(f)
 
 @asyncio.coroutine
@@ -45,11 +44,11 @@ class Spider(scrapy.Spider):
     def start_requests(self):
         print("Started Seeding")
         get_seed_urls()
-        print("Seeding complete - Urls ",len(urls))
         with open('hello.urls') as f:
             urls = f.readlines()
             for url in urls:
                 yield scrapy.Request(url=url.strip(), callback=self.parse)
+        print("Seeding complete - Urls ",len(urls))
     def parse(self, response):
         res = {}
         res['url'] =  response.request.url
