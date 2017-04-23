@@ -1,0 +1,6 @@
+scrapy
+requests
+asyncio
+aiohttp
+bs4
+pymongo

@@ -1,0 +1,12 @@
+web:
+  build: .
+  volumes:
+    - .:/scraper
+  working_dir: /scraper
+  command: scrapy runspider main.py
+  ports:
+    - "5000:5000"
+  links:
+    - db
+db:
+  image: mongo:3.0.2
