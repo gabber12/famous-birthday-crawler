@@ -30,7 +30,6 @@ def fetch_random_profiles():
     url = 'http://www.famousbirthdays.com/s/randomizer.php'
     with (yield from sem):
         page = yield from get(url, compress=True, allow_redirects=False)
-        print(page['Location'])
         yield from append_url(page['Location'])
 
 def init_seed_url():
@@ -44,6 +43,9 @@ class Spider(scrapy.Spider):
     client = MongoClient(os.environ['DB_1_PORT_27017_TCP_ADDR'])
     start_urls = ['https://blog.scrapinghub.com']
     def start_requests(self):
+        print("Started Seeding")
+        get_seed_urls()
+        print("Seeding complete - Urls ",len(urls))
         with open('hello.urls') as f:
             urls = f.readlines()
             for url in urls:
@@ -69,11 +71,3 @@ class Spider(scrapy.Spider):
         if self.client.bottr_web_1.bottr_db_1.profiles.find({'url':res['url']}).count() > 0:
             self.client.bottr_web_1.bottr_db_1.profiles.insert_one(res)
         yield res
-
-
-if __name__ == '__main__':
-    print("Started Seeding")
-    get_seed_urls()
-    print("Seeding complete - Urls ",len(urls))
-    urls = init_seed_url()
-    fetch_profiles()
